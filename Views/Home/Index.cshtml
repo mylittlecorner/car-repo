@@ -1,0 +1,54 @@
+﻿@model IEnumerable<NETTEST2.Models.UserPage>
+@if (Model.ToList() != null)
+{
+    foreach (var elements in Model.ToList())
+    {
+        foreach (var item in elements.Offers)
+        {
+        <div class="container-fluid">
+            <div class="row">
+                <img src="@Url.Content(item.Cars.ToArray()[0].ImageModels.ToArray()[0].ImagePath)" class="img-responsive roundedUP" />
+                <div class="offerbox text-center">
+                    <h1><b>@item.Name</b></h1>
+                    <hr />
+                    <table style="width:100%; display:inline-table;" class="table-condensed">
+                        <tr>
+                            <td><b>Price<br /></b>@item.Price $</td>
+                            <td><b>Brand<br /></b>@item.Cars.ToArray()[0].Brand</td>
+                            <td><b>Model<br /></b>@item.Cars.ToArray()[0].Model</td>
+                        </tr>
+                        <tr>
+                            <td><b>Year<br /></b>@item.Cars.ToArray()[0].YearOfManufacture</td>
+                            <td><b>Acceleration<br /></b>@item.Cars.ToArray()[0].CarDetails.AccelTime s</td>
+                            <td><b>Car Type<br /></b>@item.Cars.ToArray()[0].CarDetails.CarType</td>
+                        </tr>
+                        <tr>
+                            <td><b>Weight<br /></b>@item.Cars.ToArray()[0].CarDetails.CurbWeight kg</td>
+                            <td><b>Drive Type<br /></b>@item.Cars.ToArray()[0].CarDetails.DriveType</td>
+                            <td><b>Engine Type<br /></b>@item.Cars.ToArray()[0].CarDetails.EngineType</td>
+                        </tr>
+                        <tr>
+                            <td><b>Gas Mileage<br /></b>@item.Cars.ToArray()[0].CarDetails.GasMileage l/100 km</td>
+                            <td><b>Gearbox Type<br /></b>@item.Cars.ToArray()[0].CarDetails.GearboxType</td>
+                            <td><b>Power<br /></b>@item.Cars.ToArray()[0].CarDetails.Power bhp</td>
+
+                        </tr>
+                        <tr>
+                            <td><b>Top Speed<br /></b>@item.Cars.ToArray()[0].CarDetails.TopSpeed kph</td>
+                            <td><b>Torque<br /></b>@item.Cars.ToArray()[0].CarDetails.Torque Nm</td>
+                        </tr>
+                    </table>
+                    @if (elements.UserAuth)
+                    {
+                        using (Html.BeginForm("RemoveOffer", "Test", new { indexid = item.OfferID }, FormMethod.Post, new { id = "removeOfferForm", @class = "btn-default" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <a class="btn btn-default" href="javascript:document.getElementById('removeOfferForm').submit()">Usuń Oferte</a>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    }
+}
+}
