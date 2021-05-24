@@ -14,5 +14,14 @@ namespace NETTEST2.Models.Context
 		public DbSet<Car> Cars { get; set; }
 		public DbSet<CarDetails> CarsDetails { get; set; }
 		public DbSet<ImageModel> ImageModels { get; set; }
+		public DbSet<ImageModelUser> ImageModelUsers { get; set; }
+
+		protected override void OnModelCreating(DbModelBuilder modelBuilder)
+		{
+			modelBuilder.Entity<ImageModelUser>()
+				.HasRequired(e => e.ApplicationUser)
+				.WithMany()
+				.WillCascadeOnDelete(true);
+		}
 	}
 }

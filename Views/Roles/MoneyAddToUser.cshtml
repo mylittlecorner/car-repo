@@ -1,0 +1,16 @@
+﻿<h2>Money Add to User</h2>
+
+@using (Html.BeginForm("MoneyAddToUser", "Roles"))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <p>
+        Username : @Html.TextBox("UserNameU")
+        Money: @Html.TextBox("MoneyAmount")
+        Current amount: @ViewBag.Money
+
+    </p>
+
+    <input type="submit" value="Save" />
+}

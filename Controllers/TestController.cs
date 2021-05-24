@@ -12,34 +12,12 @@ using NETTEST2.Models.Context;
 using NETTEST2.Models.CarViewModel;
 using NETTEST2.Models;
 using System.IO;
+using System.Diagnostics;
 
 namespace NETTEST2.Controllers
 {
-    public class TestController : Controller
+    public class TestController : BaseController
     {
-        private ApplicationUserManager _userManager;
-
-        public TestController()
-        {
-        }
-
-        public TestController(ApplicationUserManager userManager)
-        {
-            UserManager = userManager;
-        }
-
-   
-        public ApplicationUserManager UserManager
-        {
-            get
-            {
-                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-            }
-            private set
-            {
-                _userManager = value;
-            }
-        }
 
         // GET: User
         [Route("User")]
@@ -54,6 +32,8 @@ namespace NETTEST2.Controllers
             model.Id = userData.Id;
             model.PasswordHash = userData.PasswordHash;
             model.UserName = userData.UserName;
+            model.Money = userData.Money;
+            model.ImageModelUsers = userData.ImageModelsUser;
             model.UserAuth = true;
             model.Offers = userData.Offers;
 
@@ -79,6 +59,8 @@ namespace NETTEST2.Controllers
             model.Id            = userData.Id;
             model.PasswordHash  = userData.PasswordHash;
             model.UserName      = userData.UserName;
+            model.Money         = userData.Money;
+            model.ImageModelUsers = userData.ImageModelsUser;
             model.UserAuth = false;
             model.Offers = userData.Offers;
 
@@ -97,17 +79,21 @@ namespace NETTEST2.Controllers
      
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> RemoveUser()
+        public async Task<ActionResult> RemoveUser(string userid)
         {
-            var user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+            bool iLikeCookies = false;
+            if (userid == User.Identity.GetUserId())
+                iLikeCookies = true;
+            var user = await UserManager.FindByIdAsync(userid);
             await UserManager.DeleteAsync(user);
-            HttpContext.GetOwinContext()
-            .Authentication.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+            if(iLikeCookies)
+            HttpContext.GetOwinContext().Authentication.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+
             return RedirectToAction("ShowAll", "User");
         }
 
         [Route("Admin/All")]
-        [Authorize(Users = "karoljez97@gmail.com")]
+        [Authorize(Roles = "Admin")]
         public ActionResult ShowAll()
         {
             var modelList = new List<Models.UserPage>();
@@ -124,7 +110,8 @@ namespace NETTEST2.Controllers
                     Email = userData.Email,
                     Id = userData.Id,
                     PasswordHash = userData.PasswordHash,
-                    UserName = userData.UserName
+                    UserName = userData.UserName,
+                    Money = userData.Money
                 });
             }
             if (!ModelState.IsValid)
@@ -134,6 +121,25 @@ namespace NETTEST2.Controllers
 
             return View(modelList);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> AddPhoto(ImageModelUser model)
+        {
+            model.ImageFile = Request.Files["ImageFile"];
+            string fileName = Path.GetFileNameWithoutExtension(model.ImageFile.FileName.ToString());
+            string extension = Path.GetExtension(model.ImageFile.FileName);
+            fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension;
+            model.ImagePath = "~/Images/" + fileName;
+            fileName = Path.Combine(Server.MapPath("~/Images/"), fileName);
+            model.ImageFile.SaveAs(fileName);
+            var user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+            user.ImageModelsUser.Add(model);
+            await UserManager.UpdateAsync(user);
+            return Redirect(Request.UrlReferrer.ToString());
+        }
+
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -189,12 +195,32 @@ namespace NETTEST2.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> RemoveOffer(int indexid)
+        public async Task<ActionResult> RemoveOffer(string userid,int indexid)
         {
-            var user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+            var user = await UserManager.FindByIdAsync(userid);
             var element = user.Offers.Where(e => e.OfferID == indexid).FirstOrDefault();
             user.Offers.Remove(element);
             await UserManager.UpdateAsync(user);
+            return Redirect(Request.UrlReferrer.ToString());
+        }
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> BuyOffer(string userid, int indexid)
+        {
+            var buyer = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+            var seller = await UserManager.FindByIdAsync(userid);
+            var offer = seller.Offers.Where(e => e.OfferID == indexid).FirstOrDefault();
+            if (buyer.Money >= offer.Price)
+            {
+                seller.Money += offer.Price;
+                buyer.Money -= offer.Price;
+                seller.Offers.Remove(offer);
+                buyer.Offers.Add(offer);
+                await UserManager.UpdateAsync(seller);
+                await UserManager.UpdateAsync(buyer);
+            }
             return Redirect(Request.UrlReferrer.ToString());
         }
     }

@@ -1,0 +1,72 @@
+﻿
+@{ 
+    var item = ViewBag.item;
+    var UserAuth = ViewBag.UserAuth;
+}
+<div class="container-fluid">
+    <div class="row">
+        <img src="@Url.Content(item.Cars.ToArray()[0].ImageModels.ToArray()[0].ImagePath)" class="img-responsive roundedUP" />
+        <div class="offerbox text-center">
+            <div class="avtr">
+                @if (item.ApplicationUser.ImageModelsUser == null || item.ApplicationUser.ImageModelsUser.Count == 0)
+                {
+                    <img src="@Url.Content("~/Images/avatar.jpg")" class="img-responsive img-avtr" />
+                }
+                else
+                {
+                    <img src="@Url.Content(item.ApplicationUser.ImageModelsUser.ToArray()[item.ApplicationUser.ImageModelsUser.Count - 1].ImagePath)" class="img-responsive img-avtr" />
+                }
+                @{var a = Request.Url.GetLeftPart(UriPartial.Authority) + Url.Content("~") + "User/" + item.ApplicationUserId; }
+                <b style="font-size:18px; margin-left:5px;"><a href="@a"> @item.ApplicationUser.UserName</a></b>
+            </div>
+            <br /><br />
+            <h1><b>@item.Name</b></h1>
+            <hr />
+            <table style="width:100%; display:inline-table;" class="table-condensed">
+                <tr>
+                    <td><b>Price<br /></b>@item.Price $</td>
+                    <td><b>Brand<br /></b>@item.Cars.ToArray()[0].Brand</td>
+                    <td><b>Model<br /></b>@item.Cars.ToArray()[0].Model</td>
+                </tr>
+                <tr>
+                    <td><b>Year<br /></b>@item.Cars.ToArray()[0].YearOfManufacture</td>
+                    <td><b>Acceleration<br /></b>@item.Cars.ToArray()[0].CarDetails.AccelTime s</td>
+                    <td><b>Car Type<br /></b>@item.Cars.ToArray()[0].CarDetails.CarType</td>
+                </tr>
+                <tr>
+                    <td><b>Weight<br /></b>@item.Cars.ToArray()[0].CarDetails.CurbWeight kg</td>
+                    <td><b>Drive Type<br /></b>@item.Cars.ToArray()[0].CarDetails.DriveType</td>
+                    <td><b>Engine Type<br /></b>@item.Cars.ToArray()[0].CarDetails.EngineType</td>
+                </tr>
+                <tr>
+                    <td><b>Gas Mileage<br /></b>@item.Cars.ToArray()[0].CarDetails.GasMileage l/100 km</td>
+                    <td><b>Gearbox Type<br /></b>@item.Cars.ToArray()[0].CarDetails.GearboxType</td>
+                    <td><b>Power<br /></b>@item.Cars.ToArray()[0].CarDetails.Power bhp</td>
+
+                </tr>
+                <tr>
+                    <td><b>Top Speed<br /></b>@item.Cars.ToArray()[0].CarDetails.TopSpeed kph</td>
+                    <td><b>Torque<br /></b>@item.Cars.ToArray()[0].CarDetails.Torque Nm</td>
+                </tr>
+            </table>
+            @if (UserAuth || User.IsInRole("Admin") || User.IsInRole("Moderator"))
+            {
+                <form action="Test/RemoveOffer" method="post" class="btn-default" id="@item.OfferID removeOfferForm" style="display:inline;">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="userid" name="userid" value="@item.ApplicationUserId" />
+                    <input type="hidden" id="indexid" name="indexid" value="@item.OfferID" />
+                    <a class="btn btn-default" href="javascript:document.getElementById('@item.OfferID removeOfferForm').submit()">Usuń Oferte</a>
+                </form>
+            }
+            @if (!UserAuth && User.Identity.IsAuthenticated)
+            {
+                <form action="Test/BuyOffer" method="post" class="btn-default" id="@item.OfferID buyOfferForm" style="display:inline;">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="userid" name="userid" value="@item.ApplicationUserId" />
+                    <input type="hidden" id="indexid" name="indexid" value="@item.OfferID" />
+                    <a class="btn btn-default" href="javascript:document.getElementById('@item.OfferID buyOfferForm').submit()">Kup Oferte</a>
+                </form>
+            }
+        </div>
+    </div>
+</div>

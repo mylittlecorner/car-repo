@@ -13,6 +13,8 @@ namespace NETTEST2.Models
         public string Id { get; set; }
         public string PasswordHash { get; set; }
         public string UserName { get; set; }
+        public decimal Money { get; set; }
+        public List<ImageModelUser> ImageModelUsers { get; set; }
         public bool UserAuth { get; set; }
         public List<Offer> Offers { get; set; }
         public CarView CarView { get; set; }

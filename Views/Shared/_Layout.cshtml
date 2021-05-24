@@ -27,9 +27,11 @@
                     <li>@Html.ActionLink("Informacje", "About", "Home")</li>
                     <li>@Html.ActionLink("Kontakt", "Contact", "Home")</li>
                     <li>@Html.ActionLink("Profil", "ShowAsync", "Test")</li>
-                    @if(User.Identity.GetUserId() == "ba367b28-83a6-49a6-8c8f-96dd5c4d9eb4")
+                    @if (User.IsInRole("Admin"))
                     {
-                    <li>@Html.ActionLink("Admin", "ShowAll", "Test")</li>
+                        <li>@Html.ActionLink("Admin", "ShowAll", "Test")</li>
+                        <li>@Html.ActionLink("Role", "ManageUserRoles", "Roles")</li>
+                        <li>@Html.ActionLink("Środki", "MoneyAddToUser", "Roles")</li>
                     }
                 </ul>
                 @Html.Partial("_LoginPartial")

@@ -3,6 +3,13 @@
     <div class="row">
         <div class="container-fluid">
             <img src="@Url.Content("~/Images/mountains.jpg")" class="img-responsive LEFTUPRIGHTBORDER" />
+            @if (Model.ImageModelUsers == null || Model.ImageModelUsers.Count==0 )
+            {
+                <img src="@Url.Content("~/Images/avatar.jpg")" class="img-responsive img-avtr" style="position:absolute; z-index:99; height:150px; width:150px; margin:20px; bottom:50px;" />
+            }
+            else{
+                <img src="@Url.Content(Model.ImageModelUsers.ToArray()[Model.ImageModelUsers.Count -1].ImagePath)" class="img-responsive img-avtr" style="position:absolute; z-index:99; height:150px; width:150px; margin:20px; bottom:50px;" />
+             }
         </div>
         <div class="container-fluid">
             <div class="navbar navbar-default navbar-inside-jumbotron text-center">
@@ -18,16 +25,29 @@
                 <li class="list-group-item text-center" style="word-break: break-all"><b>@Html.DisplayNameFor(model => model.Id)</b><br>@Model.Id</li>
                 <li class="list-group-item  text-center" style="word-break: break-all"><b>@Html.DisplayNameFor(model => model.Email)</b><br>@Model.Email</li>
                 <li class="list-group-item text-center" style="word-break: break-all"><b>@Html.DisplayNameFor(model => model.UserName)</b><br>@Model.UserName</li>
-                <li class="list-group-item text-center" style="word-break: break-all">
-                    @if (Model.UserAuth)
+                @if (Model.UserAuth)
+                {
+            <li class="list-group-item text-center" style="word-break: break-all">
+                @using (Html.BeginForm("AddPhoto", "Test", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <input type="file" name="ImageFile" id="ImageFile" onchange="form.submit()" style="display: none;" />
+                    <input type="button" value="Zmień zdjęcie profilowe" onclick="document.getElementById('ImageFile').click();" class="btn" />
+                }
+            </li>
+                }
+                @if (Model.UserAuth || User.IsInRole("Admin") || User.IsInRole("Moderator"))
+                {
+                    using (Html.BeginForm("RemoveUser", "Test", new { userid = Model.Id }, FormMethod.Post, new { id = "deleteRowForm", }))
                     {
-                        using (Html.BeginForm("RemoveUser", "Test", FormMethod.Post, new { id = "deleteRowForm", @class = "btn-default" }))
-                        {
-                            @Html.AntiForgeryToken()
-                            <a class="btn btn-default" href="javascript:document.getElementById('deleteRowForm').submit()">Usuń się</a>
-                        }
+                        @Html.AntiForgeryToken()
+                        <li class="list-group-item text-center" style="word-break: break-all"><b>@Html.DisplayNameFor(model => model.Money)</b><br>@Model.Money $</li>
+                        <li class="list-group-item text-center" style="word-break: break-all">
+                            <a class="btn" href="javascript:document.getElementById('deleteRowForm').submit()">Usuń się</a>
+                        </li>
                     }
-                </li>
+                }
+
             </ul>
         </div>
     </div>
@@ -68,52 +88,52 @@
                                     <a class="btn btn-default" id="button-exit">Zamknij</a>
                                 </li>
                                 <li class="decoration-none">
-                                    <input type="file" name="ImageFile" id="ImageFile"/>
+                                    <input type="file" name="ImageFile" id="ImageFile" />
                                 </li>
                                 <li class="decoration-none">
-                                    <input type="text" name="name" placeholder="Name:" class="form-control center-block" />
+                                    <input type="text" name="name" placeholder="Name:(text)" class="form-control center-block" />
                                 </li>
                                 <li class="decoration-none">
-                                    <input type="text" name="price" placeholder="Price:" class="form-control center-block" />
+                                    <input type="text" name="price" placeholder="Price:(xxxx.xx)" class="form-control center-block" />
                                 </li>
                                 <li class="decoration-none">
-                                    <input type="text" name="brand" placeholder="Brand:" class="form-control center-block" />
+                                    <input type="text" name="brand" placeholder="Brand:(text)" class="form-control center-block" />
                                 </li>
                                 <li class="decoration-none">
-                                    <input type="text" name="yom" placeholder="Year of manufacture:" class="form-control center-block" />
+                                    <input type="text" name="yom" placeholder="Year of manufacture:(xxxx)" class="form-control center-block" />
                                 </li>
                                 <li class="decoration-none">
-                                    <input type="text" name="power" placeholder="Power:" class="form-control center-block" />
+                                    <input type="text" name="power" placeholder="Power:(xxxx)" class="form-control center-block" />
                                 </li>
                                 <li class="decoration-none">
-                                    <input type="text" name="torque" placeholder="Torque:" class="form-control center-block" />
+                                    <input type="text" name="torque" placeholder="Torque:(xxxx)" class="form-control center-block" />
                                 </li>
                                 <li class="decoration-none">
-                                    <input type="text" name="top" placeholder="Top speed:" class="form-control center-block" />
+                                    <input type="text" name="top" placeholder="Top speed:(xxxx)" class="form-control center-block" />
                                 </li>
                                 <li class="decoration-none">
-                                    <input type="text" name="accel" placeholder="Acceleration time:" class="form-control center-block" />
+                                    <input type="text" name="accel" placeholder="Acceleration time:(xxxx.xx)" class="form-control center-block" />
                                 </li>
                                 <li class="decoration-none">
-                                    <input type="text" name="gas" placeholder="Gas mileage:" class="form-control center-block" />
+                                    <input type="text" name="gas" placeholder="Gas mileage:(xxxx.xx)" class="form-control center-block" />
                                 </li>
                                 <li class="decoration-none">
-                                    <input type="text" name="curb" placeholder="Curb weight:" class="form-control center-block" />
+                                    <input type="text" name="curb" placeholder="Curb weight:(xxxx.xx)" class="form-control center-block" />
                                 </li>
                                 <li class="decoration-none">
-                                    <input type="text" name="gear" placeholder="Gearbox type:" class="form-control center-block" />
+                                    <input type="text" name="gear" placeholder="Gearbox type:(text)" class="form-control center-block" />
                                 </li>
                                 <li class="decoration-none">
-                                    <input type="text" name="drive" placeholder="Drive type:" class="form-control center-block" />
+                                    <input type="text" name="drive" placeholder="Drive type:(text)" class="form-control center-block" />
                                 </li>
                                 <li class="decoration-none">
-                                    <input type="text" name="engine" placeholder="Engine type:" class="form-control center-block" />
+                                    <input type="text" name="engine" placeholder="Engine type:(text)" class="form-control center-block" />
                                 </li>
                                 <li class="decoration-none">
-                                    <input type="text" name="cartype" placeholder="Car type:" class="form-control center-block" />
+                                    <input type="text" name="cartype" placeholder="Car type:(text)" class="form-control center-block" />
                                 </li>
                                 <li class="decoration-none">
-                                    <input type="text" name="model" placeholder="Model:" class="form-control center-block" />
+                                    <input type="text" name="model" placeholder="Model:(text)" class="form-control center-block" />
                                 </li>
                                 <li class="decoration-none">
                                     <input type="submit" class="btn btn-default" value="Dodaj ofertę" />
@@ -125,56 +145,15 @@
             }
         </div>
     </div>
-        @if (Model.Offers != null)
+    @if (Model.Offers != null)
+    {
+        foreach (var item in Model.Offers)
         {
-            foreach (var item in Model.Offers)
-            {
-                <div class="container-fluid">
-                    <div class="row">
-                        <img src="@Url.Content(item.Cars.ToArray()[0].ImageModels.ToArray()[0].ImagePath)" class="img-responsive roundedUP" />
-                        <div class="offerbox text-center">
-                            <h1><b>@item.Name</b></h1>
-                            <hr />
-                            <table  style="width:100%; display:inline-table;" class="table-condensed">
-                                <tr>
-                                    <td><b>Price<br /></b>@item.Price $</td>
-                                    <td><b>Brand<br /></b>>@item.Cars.ToArray()[0].Brand</td>
-                                    <td><b>Model<br /></b>@item.Cars.ToArray()[0].Model</td>
-                                </tr>
-                                <tr>
-                                    <td><b>Year<br /></b>@item.Cars.ToArray()[0].YearOfManufacture</td>
-                                    <td><b>Acceleration<br /></b>@item.Cars.ToArray()[0].CarDetails.AccelTime s</td>
-                                    <td><b>Car Type<br /></b>@item.Cars.ToArray()[0].CarDetails.CarType</td>
-                                </tr>
-                                <tr>
-                                    <td><b>Weight<br /></b>@item.Cars.ToArray()[0].CarDetails.CurbWeight kg</td>
-                                    <td><b>Drive Type<br /></b>@item.Cars.ToArray()[0].CarDetails.DriveType</td>
-                                    <td><b>Engine Type<br /></b>@item.Cars.ToArray()[0].CarDetails.EngineType</td>
-                                </tr>
-                                <tr>
-                                    <td><b>Gas Mileage<br /></b>@item.Cars.ToArray()[0].CarDetails.GasMileage l/100 km</td>
-                                    <td><b>Gearbox Type<br /></b>@item.Cars.ToArray()[0].CarDetails.GearboxType</td>
-                                    <td><b>Power<br /></b>@item.Cars.ToArray()[0].CarDetails.Power bhp</td>
-
-                                </tr>
-                                <tr>
-                                    <td><b>Top Speed<br /></b>@item.Cars.ToArray()[0].CarDetails.TopSpeed kph</td>
-                                    <td><b>Torque<br /></b>@item.Cars.ToArray()[0].CarDetails.Torque Nm</td>
-                                </tr>
-                            </table>
-                                    @if (Model.UserAuth)
-                                    {
-                                        using (Html.BeginForm("RemoveOffer", "Test", new { indexid = item.OfferID }, FormMethod.Post, new { id = "removeOfferForm", @class = "btn-default" }))
-                                        {
-                                            @Html.AntiForgeryToken()
-                                            <a class="btn btn-default" href="javascript:document.getElementById('removeOfferForm').submit()">Usuń Oferte</a>
-                                        }
-                                    }
-                        </div>
-                    </div>
-                </div>
-            }
+            ViewBag.item = item;
+            ViewBag.UserAuth = Model.UserAuth;
+            @Html.Partial("_OfferboxPartial")
         }
+    }
 
 
 </div>

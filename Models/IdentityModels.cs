@@ -19,7 +19,8 @@ namespace NETTEST2.Models
             // Dodaj tutaj niestandardowe oświadczenia użytkownika
             return userIdentity;
         }
-
+        public decimal Money { get; set; }
+        public virtual List<ImageModelUser> ImageModelsUser { get; set; }
         public virtual List<Offer> Offers { get; set; }
     }
 
