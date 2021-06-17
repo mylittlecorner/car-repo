@@ -1,1 +1,1 @@
-# car-repo strona udostępniona na azure https://nettest220210427215802.azurewebsites.net/
+# car-repo link do strony https://pastebin.com/22T5gbGH
